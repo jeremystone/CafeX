@@ -30,9 +30,18 @@ class MoneyTest extends WordSpec
 
     "multiplied by an integer" must {
       "multiply the underlying amount" in {
-        forAll { (amount: Double, multiple: Int) =>
+        forAll { (amount: Double, multiple: Double) =>
           Money(amount) * multiple  mustBe Money(amount * multiple)
         }
+      }
+    }
+
+    "rounding to nearest penny" must {
+      "round up" in {
+        Money(12.345).roundToNearestPenny mustBe Money(12.35)
+      }
+      "round down" in {
+        Money(12.344).roundToNearestPenny mustBe Money(12.34)
       }
     }
   }

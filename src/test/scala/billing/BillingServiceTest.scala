@@ -1,6 +1,6 @@
 package billing
 
-import model.Money
+import model.{MenuItem, Money}
 import org.scalatest.{MustMatchers, WordSpec}
 
 /**
@@ -9,7 +9,7 @@ import org.scalatest.{MustMatchers, WordSpec}
 class BillingServiceTest extends WordSpec with MustMatchers {
   "BillingService" when {
 
-    val billingService = new BillingService(new MenuService)
+    val billingService = new BillingService(new MenuService, NoServiceChargeService)
 
     "no items are supplied" must {
       "calculate the cost as zero" in {
@@ -29,6 +29,21 @@ class BillingServiceTest extends WordSpec with MustMatchers {
     "given a list of supplied item names" must {
       "calculate the total amount" in {
         billingService.calculateBillTotalFromNames(List("Cola", "Coffee", "Cheese Sandwich")) mustBe Money(3.5)
+      }
+    }
+  }
+
+  "BillingService" when {
+    // Adds a fixed charge of a pound
+    val fixedServiceChargeService = new ServiceChargeService {
+      override def calculateServiceCharge(rawBillTotal: Money, items: List[MenuItem]): Money = Money(1.0)
+    }
+
+    val billingService = new BillingService(new MenuService, fixedServiceChargeService)
+
+    "service charges are included" must {
+      "add the service charge to the bill" in {
+        billingService.calculateBillTotalFromNames(List("Cola")) mustBe Money(1.5)
       }
     }
   }

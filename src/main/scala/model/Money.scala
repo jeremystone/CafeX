@@ -22,14 +22,22 @@ case class Money(amountPounds: Double) {
     */
   def -(that: Money): Money = Money(this.amountPounds - that.amountPounds)
 
-
   /**
-    * Adds money
+    * Multiplies money by a factor
     *
-    * @param multiple money to add
+    * @param multiple factor to multiply by
     * @return the total money
     */
-  def *(multiple: Int): Money = Money(this.amountPounds * multiple)
+  def *(multiple: Double): Money = Money(this.amountPounds * multiple)
+
+  /**
+    * Rounds the value to the nearest penny
+    *
+    * @return
+    */
+  def roundToNearestPenny: Money =
+    Money((amountPounds * 100).round / 100.0)
+
 }
 
 object Money {

@@ -5,7 +5,7 @@ import model.{MenuItem, Money}
 /**
   * Provides services related to billing
   */
-class BillingService(menuService: MenuService) {
+class BillingService(menuService: MenuService, serviceChargeService: ServiceChargeService) {
 
   /**
     * Calculates the bill from item names
@@ -21,6 +21,11 @@ class BillingService(menuService: MenuService) {
     calculateBillTotal(items)
   }
 
-  private def calculateBillTotal(items: List[MenuItem]): Money =
-    items.map(_.price).fold(Money.Zero)(_ + _)
+  private def calculateBillTotal(items: List[MenuItem]): Money = {
+    val rawTotal = items.map(_.price).fold(Money.Zero)(_ + _)
+
+    val serviceCharge = serviceChargeService.calculateServiceCharge(rawTotal, items)
+
+    rawTotal + serviceCharge
+  }
 }
